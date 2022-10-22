@@ -19,6 +19,7 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor.Player
     
         protected Vector2 MoveInput;
         protected Vector2 AimInput;
+        protected Vector2 AimAt;
 
         protected override void Awake()
         {
@@ -31,7 +32,7 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor.Player
             _mainCam = Camera.main;
             _crossHair = GetComponentInChildren<CrossHair>();
         }
-
+      
         protected virtual void Update()
         {
             UpdateCrossHairRotation();
@@ -40,11 +41,11 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor.Player
         protected void FixedUpdate()
         {
             UpdateMoveDir();
+            UpdateAimAt();
             UpdateAimDir();
             _crossHair.RotateCrossHair(_crossHairRotation);
         
             Move(); 
-            //Shoot();
         }
 
         private void OnEnable()
@@ -71,11 +72,16 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor.Player
             MoveDir = MoveInput.normalized;
         }
 
-        protected override void UpdateAimDir()
+        protected override void UpdateAimAt()
         {
             // Muss noch auf Controller angepasst werden!!!
             Vector3 mousePos = _mainCam.ScreenToWorldPoint(AimInput);
-            AimDir = mousePos.normalized;
+            AimAt = mousePos.normalized;
+        }
+        
+        protected override void UpdateAimDir()
+        {
+            AimDir = AimAt - (Vector2) transform.position;
         }
     
         /// <summary>
@@ -86,8 +92,7 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor.Player
         /// </summary>
         protected virtual void UpdateCrossHairRotation()
         {
-            // HIER NOCH REINSCHAUEN!!!
-            float rotZ = Mathf.Atan2(AimDir.y, AimDir.x) * Mathf.Rad2Deg + crossHairRotationOffset;
+            float rotZ = Mathf.Atan2(AimAt.y, AimAt.x) * Mathf.Rad2Deg + crossHairRotationOffset;
             _crossHairRotation = Quaternion.Euler(0, 0, rotZ);
         }
  
@@ -98,14 +103,31 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor.Player
         /// </summary>
         protected override void Shoot()
         {
-            Vector2 projSpawnPoint =  (Vector2) transform.position + AimDir * GetProjectileSpawnRadius(); 
+            // AimAt point is interpreted as a direction Vector (point at which mouse is aimed at).
+            Vector2 dir = AimAt == Vector2.zero ? Vector2.one : AimAt; 
+            // The current Position of the Player:
+            Vector2 position = (Vector2)transform.position;
+            /*
+             * ProjectileSpawnRadius equals the length from the player position to the spawn point on the
+             * radius. It is divided by the length of the direction vector in which the Projectile is
+             * supposed to move. This division equals the factor, with which the dir Vector can be stretched
+             * to reach the spawnradius (crossing point).
+             * This in turn equals the direction Vector from the player position to the ProjectileSpawnRadius.
+             */
+            Vector2 projSpawnDir = (GetProjectileSpawnRadius() / dir.magnitude) * dir;
+            /*
+             * Now the newly calculated Direction Vector, is added onto the Player Position, to calculate
+             * the Spawn point for the projectile.
+             */
+            Vector2 projSpawnPoint = position + projSpawnDir; 
+            
             BaseProjectile spawnedProj = Instantiate(loadedProjectile, projSpawnPoint, _crossHairRotation);
-            spawnedProj.AimedAtDir = AimDir;
-            Debug.DrawLine(transform.position, projSpawnPoint, Color.green, 1);
+            spawnedProj.AimedAtDir = dir;
+            if(debug) 
+                Debug.DrawLine(position, projSpawnPoint, Color.green, 1);
         }
     
         #region Interface Implementation
-    
         /// <summary>
         ///     <para>
         ///         Reads the current movement Input from the Keyboard or the left control stick

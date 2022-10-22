@@ -10,7 +10,12 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor.Enemy
         {
             throw new System.NotImplementedException();
         }
-    
+
+        protected override void UpdateAimAt()
+        {
+            throw new System.NotImplementedException(); 
+        }
+        
         protected override void UpdateAimDir()
         {
             throw new System.NotImplementedException();

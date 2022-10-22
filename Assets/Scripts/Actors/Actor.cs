@@ -15,6 +15,10 @@ namespace DotNetsBH.Scripts.Actors
         protected Collider2D Col;
         protected float colliderRadius;
         public float ColliderRadius => colliderRadius;
+        /// <summary>
+        ///     Only call Pre Instantiation, as it calls DetermineColliderRadius() in the background, before returning the collider radius!
+        /// </summary>
+        public float ColliderRadiusPreInstantiation => getColliderRadius();
 
         [SerializeField]
         protected float movementSpeed = 10;
@@ -35,9 +39,18 @@ namespace DotNetsBH.Scripts.Actors
         ///     <para>
         ///         Needs to take ChildObjects Collider and calculate largest minimum Radius of the Collider.
         ///     </para>
+        ///     <para>
+        ///         Should not be called during Update functions, as it has to make use of GetComponent()!
+        ///     </para> 
         /// </summary>
         protected abstract void DetermineColliderRadius();
 
+        private float getColliderRadius()
+        {
+            DetermineColliderRadius();
+            return colliderRadius;
+        }
+        
         /// <summary>
         ///     <para>
         ///         Sets value of MoveDir. Should be normalized upon set. 

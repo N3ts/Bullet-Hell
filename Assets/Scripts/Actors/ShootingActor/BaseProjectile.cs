@@ -48,13 +48,11 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor
             Move();
         }
         
-        
         protected virtual void OnCollisionEnter2D(Collision2D col)
         {
             Destroy(gameObject);
         }
         
-
         protected void OnDisable()
         {
             Destroy(gameObject);

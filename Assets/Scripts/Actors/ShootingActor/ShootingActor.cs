@@ -9,7 +9,13 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor
         protected BaseProjectile loadedProjectile;
         public BaseProjectile LoadedProjectile => loadedProjectile;
 
-        [SerializeField] private float colliderRadiusOffset = 0f;
+        [SerializeField] 
+        private float colliderRadiusOffset = 0.1f;
+        public float ColliderRadiusOffset
+        {
+            get => colliderRadiusOffset;
+            set => colliderRadiusOffset = value <= 0? 0.1f : value;
+        }
     
         [SerializeField]
         private int hitPoints;
@@ -28,14 +34,33 @@ namespace DotNetsBH.Scripts.Actors.ShootingActor
                 loadedProjectile = GetComponent<BaseProjectile>();
         }
 
+        /// <summary>
+        ///     <para>
+        ///         Adds Actors ColliderRadius, loadedProjectiles ColliderRadius and the colliderRadiusOffset together.
+        ///     </para> 
+        /// </summary>
+        
         protected float GetProjectileSpawnRadius()
         {
-            return colliderRadius + loadedProjectile.ColliderRadius + colliderRadiusOffset;
+            return colliderRadius + loadedProjectile.ColliderRadiusPreInstantiation + colliderRadiusOffset;
         }
-    
+
+        /// <summary>
+        ///     <para>
+        ///         Sets value of AimAt, the Point, that represents the target. 
+        ///     </para>
+        ///     <para>
+        ///         Has to be implemented in child's FixedUpdate() function.
+        ///     </para>
+        /// </summary>        
+        protected abstract void UpdateAimAt();
+        
         /// <summary>
         ///     <para>
         ///         Sets value of AimDir. Should be normalized upon set. 
+        ///     </para>
+        ///     <para>
+        ///         Has to be implemented in child's FixedUpdate() function.
         ///     </para>
         /// </summary>
         protected abstract void UpdateAimDir();

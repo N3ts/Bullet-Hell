@@ -263,7 +263,7 @@ MonoBehaviour:
   debug: 0
   movementSpeed: 30
   loadedProjectile: {fileID: 8904941367341222388, guid: 11ff59eaa298f5c4789df70fb9e09e0a, type: 3}
-  colliderRadiusOffset: 0.5
+  colliderRadiusOffset: 0
   hitPoints: 0
   crossHairRotationOffset: -90
 --- !u!1 &519420028
@@ -369,7 +369,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &851766109
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -452,7 +452,7 @@ MonoBehaviour:
   debug: 1
   movementSpeed: 10
   loadedProjectile: {fileID: 0}
-  colliderRadiusOffset: 0.02
+  colliderRadiusOffset: 0
   hitPoints: 20
 --- !u!50 &851766112
 Rigidbody2D:
